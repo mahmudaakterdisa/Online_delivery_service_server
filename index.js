@@ -98,7 +98,8 @@ async function run() {
                     status: status
                 }
             }
-
+            const result = await reviewCollection.updateOne(query, updatedDoc);
+            res.send(result);
         })
 
     }
