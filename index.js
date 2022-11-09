@@ -68,7 +68,16 @@ async function run() {
             const cursor = reviewCollection.find(query);
             const reviews = await cursor.toArray();
             res.send(reviews);
-        })
+        });
+
+        //get individuel review
+
+        app.get('/review/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const myreview = await reviewCollection.findOne(query);
+            res.send(myreview);
+        });
 
         //post review
         app.post('/review', async (req, res) => {
@@ -89,17 +98,19 @@ async function run() {
 
         //update
 
-        app.patch('/review/:id', async (req, res) => {
+        app.put('/review/:id', async (req, res) => {
             const id = req.params.id;
-            const status = req.body.status
-            const query = { _id: ObjectId(id) }
-            const updatedDoc = {
+            const filter = { _id: ObjectId(id) };
+            const user = req.body;
+            const option = { upsert: true };
+            const updatedUser = {
                 $set: {
-                    status: status
+                    message: user.message
                 }
             }
-            const result = await reviewCollection.updateOne(query, updatedDoc);
+            const result = await reviewCollection.updateOne(filter, updatedUser, option);
             res.send(result);
+
         })
 
     }
