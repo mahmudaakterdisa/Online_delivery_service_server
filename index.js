@@ -24,7 +24,7 @@ function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-        res.status(401).send({ message: 'unauthorized access' })
+        return res.status(401).send({ message: 'unauthorized access' })
     }
 
     const token = authHeader.split(' ')[1];
@@ -53,19 +53,11 @@ async function run() {
         //service data
         app.get('/services', async (req, res) => {
             const query = {}
-            // const { limit } = req.query;
-            // if (limit) {
-            //     query = { limit }
-            //     const cursor = serviceCollection.find({}).sort({ date: -1 }).limit(3);
-            // }
 
-            // else {
-            //     query = {}
-            //     const cursor = serviceCollection.find(query);
+            const { limit } = req.query;
 
-            // }
 
-            const cursor = serviceCollection.find(query);
+            const cursor = serviceCollection.find(query).limit(parseInt(limit) || 3).sort({ "service_date": -1 });
             const services = await cursor.toArray();
             res.send(services);
         });
@@ -90,9 +82,9 @@ async function run() {
         app.get('/review/:id', async (req, res) => {
             const id = req.params.id;
             const query = { service: id };
-            // const myreview = await reviewCollection.find(query);
 
-            const cursor = reviewCollection.find(query);
+
+            const cursor = reviewCollection.find(query).sort({ "review_date": -1 });
             const myreviews = await cursor.toArray();
             res.send(myreviews);
         });
